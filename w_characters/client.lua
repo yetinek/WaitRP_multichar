@@ -6,10 +6,7 @@ local CanScrollCamera = true
 CreateThread(function()
 	while true do
 		if NetworkIsPlayerActive(PlayerId()) then
-            ShutdownLoadingScreen()
-            ShutdownLoadingScreenNui()
-            TriggerEvent('esx:loadingScreenOff')
-            Citizen.Wait(200)
+			exports['w_loading']:ShutdownLoadingScreen()
 			DoScreenFadeOut(0)
 			SetupCharacters()
 			break
@@ -20,7 +17,7 @@ end)
 
 RegisterNUICallback('SelectCharacter', function(data)
     if data.changingdata then
-        TriggerServerEvent('w_characters:UpdateData', data)
+        exports['w_tokenizer']:TriggerServerEvent('w_characters:UpdateData', data)
         SetNuiFocus(false, false)
     else
         DoScreenFadeOut(0)
@@ -98,15 +95,13 @@ SpawnPreviewPeds = function(limit)
     for i = #Config.Peds, 1, -1 do
         local v = Config.Peds[i]
         local index = tostring(v.index)
-        print(index)
         local FoundedCharacter = FindCharacterByID(v.index)
         local ssn = FoundedCharacter and FoundedCharacter.ssn or nil
         if ssn ~= nil then
             CreateThread(function()
                 ESX.TriggerServerCallback('w_characters:GetSkin', function(skin)
-                    print(json.encode(skin))
                     local model = 'mp_m_freemode_01'
-                    if skin == nil then
+                    if skin ~= nil then
                         model = (skin.sex == 0 and 'mp_m_freemode_01' or 'mp_f_freemode_01')
                     end
                     RequestModel(model)
