@@ -48,6 +48,62 @@ RegisterNUICallback('SelectCharacter', function(data)
     end
 end)
 
+
+RegisterNetEvent("esx:playerLoaded")
+AddEventHandler("esx:playerLoaded", function(playerData, isNew, skin)
+    local spawn = playerData.coords or Config.Spawn
+    local finished = false
+
+    if isNew or not skin or #skin == 1 then
+        skin = Config.Default[playerData.sex]
+        skin.sex = playerData.sex == "m" and 0 or 1
+        local model = skin.sex == 0 and mp_m_freemode_01 or mp_f_freemode_01
+        RequestModel(model)
+        while not HasModelLoaded(model) do
+            RequestModel(model)
+            Wait(0)
+        end
+        SetPlayerModel(PlayerId(), model)
+        SetModelAsNoLongerNeeded(model)
+        TriggerEvent("skinchanger:loadSkin", skin, function()
+            local playerPed = PlayerPedId()
+            SetPedAoBlobRendering(playerPed, true)
+            ResetEntityAlpha(playerPed)
+            TriggerEvent("esx_skin:openSaveableMenu", function()
+                finished = true
+            end, function()
+                finished = true
+            end)
+        end)
+    else
+        finished = true
+    end
+
+    repeat
+        Wait(200)
+    until finished
+    SetCamActive(cam, false)
+    RenderScriptCams(false, false, 0, true, true)
+    cam = nil
+    local playerPed = PlayerPedId()
+    SetEntityCoordsNoOffset(playerPed, spawn.x, spawn.y, spawn.z, false, false, false, true)
+    SetEntityHeading(playerPed, spawn.heading)
+
+    if not isNew then
+        TriggerEvent("skinchanger:loadSkin", skin or Characters[spawned].skin)
+    end
+
+    Wait(500)
+    DoScreenFadeIn(750)
+
+    TriggerServerEvent("esx:onPlayerSpawn")
+    TriggerEvent("esx:onPlayerSpawn")
+    TriggerEvent("playerSpawned")
+    TriggerEvent("esx:restoreLoadout")
+    Characters, hidePlayers = {}, false
+end)
+
+
 SetupCharacters = function()
     TriggerServerEvent('w_characters:BucketState', true)
 	DisplayRadar(false)
