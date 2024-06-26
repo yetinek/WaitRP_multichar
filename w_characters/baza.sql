@@ -7,7 +7,7 @@ ALTER TABLE `users`
   ADD COLUMN `hiddenjob` varchar(244) DEFAULT 'Brak',
   ADD COLUMN `ssn` varchar(244) DEFAULT 'brak' AFTER `hiddenjob`,
   ADD COLUMN `nationality` varchar(124) NOT NULL AFTER `ssn`,
-  ADD COLUMN `playtime` int(11) DEFAULT 0 AFTER `nationality`,
+  ADD COLUMN `playtime` int(11) DEFAULT 0 AFTER `nationality`;
 
 CREATE TABLE `user_lastcharacter` (
   `license` varchar(255) NOT NULL,
