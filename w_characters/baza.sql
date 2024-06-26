@@ -12,7 +12,7 @@ ALTER TABLE `users`
 CREATE TABLE `user_lastcharacter` (
   `license` varchar(255) NOT NULL,
   `charid` int(11) NOT NULL DEFAULT 1,
-  `limit` int(11) NOT NULL DEFAULT 1
+  `limit` int(11) NOT NULL DEFAULT 1,
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 
