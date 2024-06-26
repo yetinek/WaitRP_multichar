@@ -38,6 +38,13 @@ function generateAndSaveSSN()
     end
 end
 
+
+
+AddEventHandler("playerDropped", function()
+    ESX.Players[GetIdentifier(source)] = nil
+end)
+
+
 ESX.RegisterServerCallback('w_characters:SetupCharacters', function(source, cb)
     local identifier = GetIdentifier(source)
     local limit = DataBaseExecute("SELECT * FROM `user_lastcharacter` WHERE license = '"..identifier.."'")
@@ -61,8 +68,8 @@ ESX.RegisterServerCallback('w_characters:SetupCharacters', function(source, cb)
                     accounts = data.accounts,
                     job = data.job,
                     hiddenjob = data.hiddenjob,
-                    lastPlayed = os.date("%Y-%m-%d %H:%M:%S", data.last_seen),
-                    playedTime = 0, 
+                    lastPlayed = data.ssn,
+                    playedTime = data.ssn, 
                     ssn = data.ssn
                 }
                 table.insert(PlayerCharacters, character)
@@ -102,9 +109,8 @@ local PREFIX = "char"
 RegisterNetEvent("w_characters:SelectCharacter")
 AddEventHandler("w_characters:SelectCharacter", function(ssn, data, character)
     local _source = source
-    local identifier = GetIdentifier(_source)
     local charid = data.charid
-    local identifier = PREFIX .. charid .. ":" .. GetIdentifier(source)
+    local identifier = PREFIX .. charid .. ":" .. GetIdentifier(_source)
 
     if data.firstname and data.lastname then
         MySQL.Async.execute("INSERT INTO users (identifier, firstname, lastname, dateofbirth, sex, ssn, nationality) VALUES  (@identifier, @firstname, @lastname, @dateofbirth, @sex, @ssn, @nationality)", {
